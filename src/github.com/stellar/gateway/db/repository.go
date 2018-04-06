@@ -184,7 +184,7 @@ func (r Repository) GetReceivedPayments(page, limit int) ([]*entities.ReceivedPa
 	return payments, err
 }
 
-// GetReceivedPaymentTotalByMemoID returns received payment by operation_id
+// GetReceivedPaymentTotalByMemoID returns received payment by memo_id
 func (r Repository) GetReceivedPaymentTotalByMemoID(MemoID string) (string, error) {
 
 	rows, err := r.repo.QueryRaw("select transaction_value from ReceivedPayment where memo_id = ?", MemoID)
@@ -194,21 +194,27 @@ func (r Repository) GetReceivedPaymentTotalByMemoID(MemoID string) (string, erro
 
 	var transList []string
 
+	defer rows.Close()
+
+	var total string
+
 	for rows.Next() {
-		err := rows.Scan(&transList)
+		err := rows.Scan(&total)
 		if err != nil {
 			fmt.Println(err)
 		}
+		transList = append(transList, total)
 	}
 
 	var sum float64
 
 	for _, i := range transList {
-		j, _ := strconv.ParseFloat(i, 32)
+		j, _ := strconv.ParseFloat(i, 64)
 		sum += j
 	}
 
-	return strconv.FormatFloat(sum, 'f', 8, 32), err
+	fmt.Println(sum)
+	return strconv.FormatFloat(sum, 'f', 8, 64), err
 
 }
 

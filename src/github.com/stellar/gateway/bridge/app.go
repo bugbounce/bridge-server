@@ -219,7 +219,7 @@ func (a *App) Serve() {
 
 	bridge.Get("/admin/received-payments", a.requestHandler.AdminReceivedPayments)
 	bridge.Get("/admin/received-payments/:id", a.requestHandler.AdminReceivedPayment)
-	bridge.Get("/admin/received-payments/:memo_id", a.requestHandler.AdminReceivedPaymentMemo)
+	bridge.Get("/admin/received-payments/memo/:memo_id", a.requestHandler.AdminReceivedPaymentMemo)
 	bridge.Get("/admin/sent-transactions", a.requestHandler.AdminSentTransactions)
 
 	if a.config.Develop {
