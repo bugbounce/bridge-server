@@ -53,10 +53,12 @@ func HeadersMiddleware() func(next http.Handler) http.Handler {
 func APIKeyMiddleware(apiKey string) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		fn := func(w http.ResponseWriter, r *http.Request) {
-			k := r.PostFormValue("apiKey")
-			if k != apiKey {
-				http.Error(w, "Forbidden", http.StatusForbidden)
-				return
+			if r.Method == "POST" {
+				k := r.PostFormValue("apiKey")
+				if k != apiKey {
+					http.Error(w, "Forbidden", http.StatusForbidden)
+					return
+				}
 			}
 			next.ServeHTTP(w, r)
 		}
