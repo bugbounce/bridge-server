@@ -178,12 +178,19 @@ func (pl *PaymentListener) onPayment(payment horizon.PaymentResponse) (err error
 		return
 	}
 
+	memoError := pl.horizon.LoadMemo(&payment)
+	if memoError != nil {
+		return errors.Wrap(memoError, "Unable to load transaction memo")
+	}
+
 	dbPayment := &entities.ReceivedPayment{
-		OperationID:   payment.ID,
-		TransactionID: payment.TransactionID,
-		ProcessedAt:   pl.now(),
-		PagingToken:   payment.PagingToken,
-		Status:        "Processing...",
+		OperationID:      payment.ID,
+		TransactionID:    payment.TransactionID,
+		ProcessedAt:      pl.now(),
+		PagingToken:      payment.PagingToken,
+		MemoID:           payment.Memo.Value,
+		TransactionValue: payment.Amount,
+		Status:           "Processing...",
 	}
 
 	err = pl.entityManager.Persist(dbPayment)
