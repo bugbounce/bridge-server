@@ -73,6 +73,31 @@ func (rh *RequestHandler) AdminReceivedPayment(c web.C, w http.ResponseWriter, r
 	}
 }
 
+// AdminReceivedPaymentMemo implements /admin/received-payments/{memo_id} endpoint
+func (rh *RequestHandler) AdminReceivedPaymentMemo(c web.C, w http.ResponseWriter, r *http.Request) {
+	total, err := rh.Repository.GetReceivedPaymentTotalByMemoID(c.URLParams["memo_id"])
+
+	if err != nil {
+		log.WithFields(log.Fields{"err": err}).Error("Error loading ReceivedPayments")
+		server.Write(w, protocols.InternalServerError)
+		return
+	}
+
+	type MemoData struct {
+		TotalReceived string `json:"total_received"`
+	}
+
+	response, err := json.Marshal(MemoData{total})
+
+	if err != nil {
+		log.WithFields(log.Fields{"err": err}).Error("Error marshalling total_received")
+		server.Write(w, protocols.InternalServerError)
+	}
+
+	w.Write(response)
+
+}
+
 func (rh *RequestHandler) getComplianceData(memo string) (*compliance.AuthData, error) {
 	complianceRequestURL := rh.Config.Compliance + "/receive"
 	complianceRequestBody := url.Values{"memo": {string(memo)}}

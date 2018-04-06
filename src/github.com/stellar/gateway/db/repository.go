@@ -2,6 +2,7 @@ package db
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/sirupsen/logrus"
 	"github.com/stellar/gateway/db/entities"
@@ -181,6 +182,34 @@ func (r Repository) GetReceivedPayments(page, limit int) ([]*entities.ReceivedPa
 
 	err := r.driver.GetMany(&payments, nil, &orderQuery, &offsetQuery, &limitQuery)
 	return payments, err
+}
+
+// GetReceivedPaymentTotalByMemoID returns received payment by operation_id
+func (r Repository) GetReceivedPaymentTotalByMemoID(MemoID string) (string, error) {
+
+	rows, err := r.repo.QueryRaw("select transaction_value from ReceivedPayment where memo_id = ?", MemoID)
+	if err != nil {
+		return "Database error", err
+	}
+
+	var transList []string
+
+	for rows.Next() {
+		err := rows.Scan(&transList)
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+
+	var sum float64
+
+	for _, i := range transList {
+		j, _ := strconv.ParseFloat(i, 32)
+		sum += j
+	}
+
+	return strconv.FormatFloat(sum, 'f', 8, 32), err
+
 }
 
 // GetSentTransactions returns received payments

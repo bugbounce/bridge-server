@@ -4,12 +4,13 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
 	"os"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/elazarl/go-bindata-assetfs"
 	"github.com/facebookgo/inject"
@@ -218,6 +219,7 @@ func (a *App) Serve() {
 
 	bridge.Get("/admin/received-payments", a.requestHandler.AdminReceivedPayments)
 	bridge.Get("/admin/received-payments/:id", a.requestHandler.AdminReceivedPayment)
+	bridge.Get("/admin/received-payments/:memo_id", a.requestHandler.AdminReceivedPaymentMemo)
 	bridge.Get("/admin/sent-transactions", a.requestHandler.AdminSentTransactions)
 
 	if a.config.Develop {
