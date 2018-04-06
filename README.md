@@ -1,3 +1,8 @@
+#Additional modifications to the stellar-bridge server.
+-- Additionally store memo_id and transaction value for received_payments in the database.
+-- Additional http endpoint for retrieving total received value per memo_id.
+-- Minor fix in the server middleware to bypass 'apiKey' auth fo GET requests. No prior authorization was implemented for GET. 
+
 # bridge-server
 
 This suite consists of the following apps:
